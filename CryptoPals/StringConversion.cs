@@ -1,54 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
 namespace CryptoPals
 {
-	public struct Bytes : IEquatable<Bytes>, IReadOnlyCollection<byte>
-	{
-		private readonly byte[] Raw;
-
-		public int Count => ((IReadOnlyCollection<byte>)Raw).Count;
-
-		public Bytes(byte[] raw)
-		{
-			Raw = raw;
-		}
-
-		public static Bytes FromHex(string input) => new Bytes(Conversions.HexToBytes(input));
-
-		public override bool Equals(object? obj) =>
-			obj is Bytes bytes && Equals(bytes);
-		public bool Equals([AllowNull] Bytes other)
-		{
-			if (Raw.Length != other.Raw.Length)
-				return false;
-			for (int i = 0; i < Raw.Length; ++i)
-				if (Raw[i] != other.Raw[i])
-					return false;
-			return true;
-		}
-
-		public string ToBase64() => Conversions.ToBase64(Raw);
-
-		public override string ToString() => ToBase64();
-		public override int GetHashCode() => Raw.Aggregate(0, (a,b) => HashCode.Combine(a, b));
-
-		public IEnumerator<byte> GetEnumerator()
-		{
-			return ((IEnumerable<byte>)Raw).GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return Raw.GetEnumerator();
-		}
-	}
-
-	internal static class Conversions
+	public static class StringConversion
 	{
 		private static int ToHexValue(char c)
 		{
@@ -87,6 +43,19 @@ namespace CryptoPals
 			sb.Append(Base64Chars[((a & ~MASK1) << 4) | ((b & MASK2) >> 4)]);
 			sb.Append(Base64Chars[((b & ~MASK2) << 2) | ((c & MASK3) >> 6)]);
 			sb.Append(Base64Chars[c & ~MASK3]);
+		}
+		private static readonly char[] HexChars = Enumerable.Range('0', 10).Concat(Enumerable.Range('A', 7)).Select(c => (char)c).ToArray();
+		public static string ToHex(byte[] input)
+		{
+			if (input is null)
+				throw new ArgumentNullException(nameof(input));
+			var sb = new StringBuilder();
+			foreach (var b in input)
+			{
+				sb.Append(HexChars[b >> 4]);
+				sb.Append(HexChars[b & 0x0F]);
+			}
+			return sb.ToString();
 		}
 		public static string ToBase64(byte[] input)
 		{
