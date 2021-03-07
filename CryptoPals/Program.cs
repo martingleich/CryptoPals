@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace CryptoPals
 {
@@ -6,7 +7,7 @@ namespace CryptoPals
 	{
 		static void Main(string[] args)
 		{
-			Second();
+			Third();
 		}
 
 		public static void First()
@@ -19,6 +20,15 @@ namespace CryptoPals
 			var first = Bytes.FromHex("1c0111001f010100061a024b53535009181c");
 			var second = Bytes.FromHex("686974207468652062756c6c277320657965");
 			Console.WriteLine(Operations.Xor(first, second).ToHex());
+		}
+		public static void Third()
+		{
+			var chiper = Bytes.FromHex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
+			foreach (var opt in SingleByteCharDecryption.FindDecryptionKeys(chiper))
+			{
+				var text = Encoding.ASCII.GetString(opt.Item1.Raw);
+				Console.WriteLine(text);
+			}
 		}
 	}
 }

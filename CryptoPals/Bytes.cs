@@ -8,7 +8,7 @@ namespace CryptoPals
 {
 	public struct Bytes : IEquatable<Bytes>, IReadOnlyCollection<byte>
 	{
-		private readonly byte[] Raw;
+		public readonly byte[] Raw;
 
 		public int Count => ((IReadOnlyCollection<byte>)Raw).Count;
 
