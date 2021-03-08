@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace CryptoPals
 {
@@ -11,5 +12,6 @@ namespace CryptoPals
 			yield return 255;
 		}
 		public static byte Xor(this byte a, byte b) => (byte)(a ^ b);
+		public static IEnumerable<(T Value, int Id)> AddIDs<T>(this IEnumerable<T> self, int offset = 0, int scale = 1) => self.Select((x, i) => (x, offset + scale*i));
 	}
 }

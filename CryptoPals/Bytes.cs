@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 
 namespace CryptoPals
 {
@@ -35,6 +36,22 @@ namespace CryptoPals
 		}
 
 		public string ToBase64() => StringConversion.ToBase64(Raw);
+		public string ToASCII() => Encoding.ASCII.GetString(Raw);
+		public string ToPrintableASCII()
+		{
+			var ascii = ToASCII();
+			var sb = new StringBuilder();
+			foreach (var c in ascii)
+			{
+				if (c == '\n') sb.Append("\\n");
+				else if (c == '\r') sb.Append("\\r");
+				else if (c == '\t') sb.Append("\\t");
+				else if (c == '\\') sb.Append("\\\\");
+				else if (char.IsControl(c) || c > 127) sb.Append($"\\x{(int)c:X4}");
+				else sb.Append(c);
+			}
+			return sb.ToString();
+		}
 
 		public override string ToString() => ToBase64();
 		public override int GetHashCode() => Raw.Aggregate(0, (a,b) => HashCode.Combine(a, b));

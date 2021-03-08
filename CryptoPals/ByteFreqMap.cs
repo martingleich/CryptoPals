@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -29,5 +30,13 @@ namespace CryptoPals
 
 		public IEnumerator<KeyValuePair<byte, double>> GetEnumerator() => Frequencies.Select((v, i) => KeyValuePair.Create((byte)i, v)).GetEnumerator();
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public double Sum(Func<KeyValuePair<byte, double>, double> select)
+		{
+			double sum = 0;
+			for (int i = 0; i < 256; ++i)
+				sum += select(KeyValuePair.Create((byte)i, Frequencies[i]));
+			return sum;
+		}
 	}
 }
