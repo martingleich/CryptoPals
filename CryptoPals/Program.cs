@@ -9,7 +9,7 @@ namespace CryptoPals
 	{
 		static void Main(string[] args)
 		{
-			Challenge08();
+			Challenge07();
 		}
 
 		public static void Challenge01()
@@ -63,7 +63,6 @@ namespace CryptoPals
 		public static void Challenge07()
 		{
 			var aes = Aes.Create();
-			aes.BlockSize = 128;
 			aes.Mode = CipherMode.ECB;
 			aes.Key = Bytes.FromASCII("YELLOW SUBMARINE");
 			var transform = aes.CreateDecryptor();
