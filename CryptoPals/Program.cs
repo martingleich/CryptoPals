@@ -9,21 +9,21 @@ namespace CryptoPals
 	{
 		static void Main(string[] args)
 		{
-			Seventh();
+			Challenge07();
 		}
 
-		public static void First()
+		public static void Challenge01()
 		{
 			var input = Bytes.FromHex("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d");
 			Console.WriteLine(input.ToBase64());
 		}
-		public static void Second()
+		public static void Challenge02()
 		{
 			var first = Bytes.FromHex("1c0111001f010100061a024b53535009181c");
 			var second = Bytes.FromHex("686974207468652062756c6c277320657965");
 			Console.WriteLine(Bytes.Xor(first, second).ToHex());
 		}
-		public static void Third()
+		public static void Challenge03()
 		{
 			var chiper = Bytes.FromHex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
 			foreach (var opt in SingleByteXorChiper.FindDecryptionKeys(chiper, 10, 0.05))
@@ -32,7 +32,7 @@ namespace CryptoPals
 				Console.WriteLine(text);
 			}
 		}
-		public static void Fourth()
+		public static void Challenge04()
 		{
 			var lines = System.IO.File.ReadLines("Challenge4.txt", Encoding.ASCII).ToArray();
 			var guesses = from entry in lines.AddIDs()
@@ -46,14 +46,14 @@ namespace CryptoPals
 				Console.WriteLine(clearText);
 			}
 		}
-		public static void Fifth()
+		public static void Challenge05()
 		{
 			var clearText = Bytes.FromASCII("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
 			var chiperText = RepeatingKeyXorChiper.Encrypt(clearText, Bytes.FromASCII("ICE"));
 			Console.Write(chiperText.ToHex());
 		}
 
-		public static void Sixth()
+		public static void Challenge06()
 		{
 			var chiperText = Bytes.FromBase64(System.IO.File.ReadAllLines("Challenge6.txt", Encoding.ASCII));
 			foreach (var option in RepeatingKeyXorChiper.FindDecryption(chiperText).Take(1))
@@ -62,7 +62,7 @@ namespace CryptoPals
 			}
 		}
 
-		public static void Seventh()
+		public static void Challenge07()
 		{
 			var aes = Aes.Create();
 			aes.BlockSize = 128;
