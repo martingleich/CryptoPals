@@ -8,7 +8,7 @@ namespace CryptoPals
 	{
 		static void Main(string[] args)
 		{
-			Fifth();
+			Sixth();
 		}
 
 		public static void First()
@@ -54,6 +54,11 @@ namespace CryptoPals
 
 		public static void Sixth()
 		{
+			var chiperText = Bytes.FromBase64(string.Join("", System.IO.File.ReadAllLines("Challenge6.txt", Encoding.ASCII)));
+			foreach (var option in RepeatingKeyXorChiper.FindDecryption(chiperText).Take(1))
+			{
+				Console.WriteLine(option.ToASCII());
+			}
 		}
 	}
 }
