@@ -25,7 +25,7 @@ namespace CryptoPals
 		public static void Third()
 		{
 			var chiper = Bytes.FromHex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
-			foreach (var opt in SingleByteCharDecryption.FindDecryptionKeys(chiper, 10))
+			foreach (var opt in SingleByteCharDecryption.FindDecryptionKeys(chiper, 10, 0.05))
 			{
 				var text = opt.Item1.ToPrintableASCII();
 				Console.WriteLine(text);
@@ -36,12 +36,12 @@ namespace CryptoPals
 			var lines = System.IO.File.ReadLines(@"C:\Home\source\CryptoPals\Challenge4.txt", Encoding.ASCII).ToArray();
 			var guesses = from entry in lines.AddIDs()
 						  let chiper = Bytes.FromHex(entry.Value)
-						  from guess in SingleByteCharDecryption.FindDecryptionKeys(chiper, 3)
+						  from guess in SingleByteCharDecryption.FindDecryptionKeys(chiper, 3, 0.05)
 						  orderby guess.Item3
-						  select (guess.Item1, entry.Id);
-			foreach (var (lineBytes, id) in guesses.Take(10))
+						  select (guess.Item1, entry.Id, guess.Item3);
+			foreach (var (lineBytes, id, err) in guesses.Take(10))
 			{
-				Console.Write($"{id:D3}: ");
+				Console.Write($"{id:D3}/{err}: ");
 				Console.WriteLine(lineBytes.ToPrintableASCII());
 			}
 		}
