@@ -5,7 +5,7 @@ namespace CryptoPals
 {
 	public static class SingleByteXorChiper
 	{
-		public static byte[] Decrypt(byte[] chiperText, byte key) => Bytes.Create(chiperText.Select(c => c.Xor(key)));
+		public static byte[] Decrypt(byte[] chiperText, byte key) => Bytes.FromRange(chiperText.Select(c => c.Xor(key)));
 
 		public static IEnumerable<(byte, double)> FindDecryptionKeys(byte[] chiperText, int topCount, double cutoff)
 		{

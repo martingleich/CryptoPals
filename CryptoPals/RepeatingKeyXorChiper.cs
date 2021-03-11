@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace CryptoPals
 {
 	public static class RepeatingKeyXorChiper
 	{
-		public static byte[] Encrypt(byte[] clearText, byte[] key) => Bytes.Create(clearText.Select((c, id) => c.Xor(key[id % key.Length])));
+		public static byte[] Encrypt(byte[] clearText, byte[] key) => Bytes.FromRange(clearText.Select((c, id) => c.Xor(key[id % key.Length])));
 		public static byte[] Decrypt(byte[] chiperText, byte[] key) => Encrypt(chiperText, key);
-
-		public static int HammingDistance(byte[] a, byte[] b) => a.Zip(b, HammingDistance).Sum();
-		public static int HammingDistance(byte a, byte b) => BitOperations.PopCount((uint)(a ^ b));
 
 		public static IEnumerable<(int, double)> FindKeySizes(byte[] chiperText)
 		{
@@ -22,15 +18,9 @@ namespace CryptoPals
 				double distance = 0;
 				for (int i = 0; i < count; ++i)
 				{
-					var first = rnd.Next(0, chiperText.Length / keySize) * keySize;
-					int second;
-					do
-					{
-						second = rnd.Next(0, chiperText.Length / keySize) * keySize;
-					} while (first == second);
-
+					var (first, second) = rnd.NextDiffrentMultiples(chiperText.Length, keySize);
 					for (int j = 0; j < keySize; ++j)
-						distance += HammingDistance(chiperText[first + j], chiperText[second + j]);
+						distance += chiperText[first + j].HammingDistance(chiperText[second + j]);
 				}
 				distance /= count * keySize;
 				yield return (keySize, distance);
@@ -45,7 +35,7 @@ namespace CryptoPals
 				var keyByte = SingleByteXorChiper.FindDecryptionKeys(b, 1, 0.05).First().Item1;
 				key.Add(keyByte);
 			}
-			return Bytes.Create(key);
+			return Bytes.FromRange(key);
 		}
 
 		public static IEnumerable<byte[]> FindDecryption(byte[] chiperText)

@@ -13,7 +13,7 @@ namespace UnitTests
 		[InlineData("05ab", new byte[] { 0x05, 0xab })]
 		public void FromHex(string input, byte[] result)
 		{
-			Assert.Equal(Bytes.Create(result), Bytes.FromHex(input));
+			Assert.Equal(result, Bytes.FromHex(input));
 		}
 
 		[Theory]
@@ -25,10 +25,10 @@ namespace UnitTests
 		[InlineData(new byte[] {0x48, 0x61, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x65, 0x6c, 0x74}, "SGFsbG8gV2VsdA==")]
 		public void ToBase64(byte[] input, string result)
 		{
-			var base64 = Bytes.Create(input).ToBase64();
+			var base64 = input.ToBase64();
 			Assert.Equal(result, base64);
 			var original = Bytes.FromBase64(base64);
-			Assert.Equal(Bytes.Create(input), original);
+			Assert.Equal(input, original);
 		}
 
 		[Fact]
@@ -44,7 +44,7 @@ namespace UnitTests
 		{
 			var a = Bytes.FromASCII("this is a test");
 			var b = Bytes.FromASCII("wokka wokka!!!");
-			var d = RepeatingKeyXorChiper.HammingDistance(a, b);
+			var d = a.HammingDistance(b);
 			Assert.Equal(37, d);
 		}
 	}

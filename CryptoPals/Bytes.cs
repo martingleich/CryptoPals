@@ -7,7 +7,7 @@ namespace CryptoPals
 {
 	public static class Bytes
 	{
-		public static byte[] Create(IEnumerable<byte> bytes) => bytes.ToArray();
+		public static byte[] FromRange(IEnumerable<byte> bytes) => bytes.ToArray();
 		public static byte[] FromHex(string input) => StringConversion.HexToBytes(input);
 		public static byte[] FromASCII(string input) => Encoding.ASCII.GetBytes(input);
 		public static byte[] FromBase64(string input) => StringConversion.Base64ToBytes(input);
@@ -32,11 +32,13 @@ namespace CryptoPals
 			return sb.ToString();
 		}
 
+		public static int HammingDistance(this byte[] a, byte[] b) => a.Zip(b, Extensions.HammingDistance).Sum();
+
 		public static byte[] Xor(byte[] a, byte[] b)
 		{
 			if (a.Length != b.Length)
 				throw new ArgumentException("Diffrent length of parameters");
-			return Create(a.Zip(b, (a, b) => (byte)(a ^ b)));
+			return FromRange(a.Zip(b, (a, b) => (byte)(a ^ b)));
 		}
 
 		public static byte[][] Transpose(this byte[] self, int step)
