@@ -9,7 +9,7 @@ namespace CryptoPals
 {
 	public struct Bytes : IEquatable<Bytes>, IReadOnlyCollection<byte>
 	{
-		public readonly byte[] Raw;
+		private readonly byte[] Raw;
 
 		public int Count => ((IReadOnlyCollection<byte>)Raw).Count;
 
@@ -23,6 +23,7 @@ namespace CryptoPals
 
 		public static Bytes FromHex(string input) => new Bytes(StringConversion.HexToBytes(input));
 		public static Bytes FromASCII(string input) => new Bytes(Encoding.ASCII.GetBytes(input));
+		public static Bytes FromBase64(string input) => new Bytes(StringConversion.Base64ToBytes(input));
 		internal string ToHex() => StringConversion.ToHex(Raw);
 
 		public override bool Equals(object? obj) => obj is Bytes bytes && Equals(bytes);

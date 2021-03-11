@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CryptoPals": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Home\\source\\CryptoPals"
+    }
+  }
+}

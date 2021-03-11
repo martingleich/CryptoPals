@@ -33,7 +33,7 @@ namespace CryptoPals
 		}
 		public static void Fourth()
 		{
-			var lines = System.IO.File.ReadLines(@"C:\Home\source\CryptoPals\Challenge4.txt", Encoding.ASCII).ToArray();
+			var lines = System.IO.File.ReadLines("Challenge4.txt", Encoding.ASCII).ToArray();
 			var guesses = from entry in lines.AddIDs()
 						  let chiper = Bytes.FromHex(entry.Value)
 						  from guess in SingleByteXorChiper.FindDecryptionKeys(chiper, 3, 0.05)
@@ -50,6 +50,10 @@ namespace CryptoPals
 			var clearText = Bytes.FromASCII("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
 			var chiperText = RepeatingKeyXorChiper.Encrypt(clearText, Bytes.FromASCII("ICE"));
 			Console.Write(chiperText.ToHex());
+		}
+
+		public static void Sixth()
+		{
 		}
 	}
 }
