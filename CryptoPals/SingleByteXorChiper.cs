@@ -3,11 +3,9 @@ using System.Linq;
 
 namespace CryptoPals
 {
-	public static class SingleByteCharDecryption
+	public static class SingleByteXorChiper
 	{
-		public static readonly ByteFreqMap ENGLISH_FREQ_MAP = ByteFreqMap.FromValues(System.IO.File.ReadAllBytes(@"C:\Home\source\CryptoPals\raw_english.txt"));
-
-		public static Bytes Decrypt(Bytes chiper, byte key) => new Bytes(chiper.Select(c => c.Xor(key)));
+		public static Bytes Decrypt(Bytes chiperText, byte key) => new Bytes(chiperText.Select(c => c.Xor(key)));
 
 		public static IEnumerable<(Bytes, byte, double)> FindDecryptionKeys(Bytes chiperText, int topCount, double cutoff)
 		{
@@ -25,7 +23,7 @@ namespace CryptoPals
 			for (int i = 0; i < 256; ++i)
 			{
 				byte b = (byte)i;
-				var diff = ENGLISH_FREQ_MAP[k.Xor(b)] - freqMap[b];
+				var diff = Facts.ENGLISH_FREQ_MAP[k.Xor(b)] - freqMap[b];
 				sum += diff * diff;
 				if (sum > cutoff)
 					return cutoff;

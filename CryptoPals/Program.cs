@@ -8,7 +8,7 @@ namespace CryptoPals
 	{
 		static void Main(string[] args)
 		{
-			Fourth();
+			Fifth();
 		}
 
 		public static void First()
@@ -25,7 +25,7 @@ namespace CryptoPals
 		public static void Third()
 		{
 			var chiper = Bytes.FromHex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
-			foreach (var opt in SingleByteCharDecryption.FindDecryptionKeys(chiper, 10, 0.05))
+			foreach (var opt in SingleByteXorChiper.FindDecryptionKeys(chiper, 10, 0.05))
 			{
 				var text = opt.Item1.ToPrintableASCII();
 				Console.WriteLine(text);
@@ -36,7 +36,7 @@ namespace CryptoPals
 			var lines = System.IO.File.ReadLines(@"C:\Home\source\CryptoPals\Challenge4.txt", Encoding.ASCII).ToArray();
 			var guesses = from entry in lines.AddIDs()
 						  let chiper = Bytes.FromHex(entry.Value)
-						  from guess in SingleByteCharDecryption.FindDecryptionKeys(chiper, 3, 0.05)
+						  from guess in SingleByteXorChiper.FindDecryptionKeys(chiper, 3, 0.05)
 						  orderby guess.Item3
 						  select (guess.Item1, entry.Id, guess.Item3);
 			foreach (var (lineBytes, id, err) in guesses.Take(10))
@@ -44,6 +44,12 @@ namespace CryptoPals
 				Console.Write($"{id:D3}/{err}: ");
 				Console.WriteLine(lineBytes.ToPrintableASCII());
 			}
+		}
+		public static void Fifth()
+		{
+			var clearText = Bytes.FromASCII("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
+			var chiperText = RepeatingKeyXorChiper.Encrypt(clearText, Bytes.FromASCII("ICE"));
+			Console.Write(chiperText.ToHex());
 		}
 	}
 }

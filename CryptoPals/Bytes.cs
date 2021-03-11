@@ -22,6 +22,7 @@ namespace CryptoPals
 		}
 
 		public static Bytes FromHex(string input) => new Bytes(StringConversion.HexToBytes(input));
+		public static Bytes FromASCII(string input) => new Bytes(Encoding.ASCII.GetBytes(input));
 		internal string ToHex() => StringConversion.ToHex(Raw);
 
 		public override bool Equals(object? obj) => obj is Bytes bytes && Equals(bytes);
@@ -55,6 +56,8 @@ namespace CryptoPals
 
 		public override string ToString() => ToBase64();
 		public override int GetHashCode() => Raw.Aggregate(0, (a,b) => HashCode.Combine(a, b));
+
+		public byte this[int idx] => Raw[idx];
 
 		public IEnumerator<byte> GetEnumerator()
 		{
