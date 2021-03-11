@@ -9,7 +9,7 @@ namespace CryptoPals
 	{
 		static void Main(string[] args)
 		{
-			Challenge07();
+			Challenge09();
 		}
 
 		public static void Challenge01()
@@ -85,6 +85,11 @@ namespace CryptoPals
 				if (blocks.ToHashSet(ArrayEqualComparer<byte>.Instance).Count != blocks.Length)
 					Console.WriteLine($"The line {id} is most likely AES-ECB encrypted.");
 			}
+		}
+		public static void Challenge09()
+		{
+			var value = Bytes.FromASCII("YELLOW SUBMARINE").Pad_PKCS_7(20);
+			Console.Write(value.ToPrintableASCII());
 		}
 	}
 }

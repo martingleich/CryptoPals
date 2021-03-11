@@ -26,7 +26,7 @@ namespace CryptoPals
 				else if (c == '\r') sb.Append("\\r");
 				else if (c == '\t') sb.Append("\\t");
 				else if (c == '\\') sb.Append("\\\\");
-				else if (char.IsControl(c) || c > 127) sb.Append($"\\x{(int)c:X4}");
+				else if (char.IsControl(c) || c > 127) sb.Append($"\\x{(int)c:X2}");
 				else sb.Append(c);
 			}
 			return sb.ToString();
@@ -65,6 +65,19 @@ namespace CryptoPals
 				blocks.Add(block);
 			}
 			return blocks.ToArray();
+		}
+
+		public static byte[] Pad_PKCS_7(this byte[] data, int paddingLength)
+		{
+			if (data.Length > paddingLength)
+				throw new ArgumentException($"data.Length({data.Length}) > paddingLength({paddingLength})");
+			if(data.Length - paddingLength > 255)
+				throw new ArgumentException($"data.Length({data.Length}) - paddingLength({paddingLength}) > 255");
+			byte[] result = new byte[paddingLength];
+			Array.Copy(data, result, data.Length);
+			for (int i = data.Length; i < paddingLength; ++i)
+				result[i] = (byte)(paddingLength - data.Length);
+			return result;
 		}
 	}
 }
