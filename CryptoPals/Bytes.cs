@@ -11,6 +11,7 @@ namespace CryptoPals
 		public static byte[] FromHex(string input) => StringConversion.HexToBytes(input);
 		public static byte[] FromASCII(string input) => Encoding.ASCII.GetBytes(input);
 		public static byte[] FromBase64(string input) => StringConversion.Base64ToBytes(input);
+		public static byte[] FromBase64(params string[] input) => StringConversion.Base64ToBytes(string.Concat(input));
 
 		public static string ToHex(this byte[] self) => StringConversion.ToHex(self);
 		public static string ToBase64(this byte[] self) => StringConversion.ToBase64(self);

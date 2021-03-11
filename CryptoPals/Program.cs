@@ -9,7 +9,7 @@ namespace CryptoPals
 	{
 		static void Main(string[] args)
 		{
-			Sixth();
+			Seventh();
 		}
 
 		public static void First()
@@ -55,7 +55,7 @@ namespace CryptoPals
 
 		public static void Sixth()
 		{
-			var chiperText = Bytes.FromBase64(string.Join("", System.IO.File.ReadAllLines("Challenge6.txt", Encoding.ASCII)));
+			var chiperText = Bytes.FromBase64(System.IO.File.ReadAllLines("Challenge6.txt", Encoding.ASCII));
 			foreach (var option in RepeatingKeyXorChiper.FindDecryption(chiperText).Take(1))
 			{
 				Console.WriteLine(option.ToASCII());
@@ -67,6 +67,15 @@ namespace CryptoPals
 			var aes = Aes.Create();
 			aes.BlockSize = 128;
 			aes.Mode = CipherMode.ECB;
+			aes.Key = Bytes.FromASCII("YELLOW SUBMARINE");
+			var transform = aes.CreateDecryptor();
+
+			var chiperText = Bytes.FromBase64(System.IO.File.ReadAllLines("Challenge7.base64", Encoding.ASCII));
+			byte[] result = new byte[chiperText.Length];
+			int resultSize = 0;
+			for (int i = 0; i < chiperText.Length; i += aes.BlockSize)
+				resultSize += transform.TransformBlock(chiperText, i, Math.Min(aes.BlockSize, chiperText.Length - i), result, i);
+			Console.WriteLine(result.ToASCII());
 		}
 	}
 }
