@@ -9,7 +9,7 @@ namespace CryptoPals
 	{
 		static void Main(string[] args)
 		{
-			Challenge07();
+			Challenge08();
 		}
 
 		public static void Challenge01()
@@ -52,7 +52,6 @@ namespace CryptoPals
 			var chiperText = RepeatingKeyXorChiper.Encrypt(clearText, Bytes.FromASCII("ICE"));
 			Console.Write(chiperText.ToHex());
 		}
-
 		public static void Challenge06()
 		{
 			var chiperText = Bytes.FromBase64(System.IO.File.ReadAllLines("Challenge6.txt", Encoding.ASCII));
@@ -61,7 +60,6 @@ namespace CryptoPals
 				Console.WriteLine(option.ToASCII());
 			}
 		}
-
 		public static void Challenge07()
 		{
 			var aes = Aes.Create();
@@ -76,6 +74,18 @@ namespace CryptoPals
 			for (int i = 0; i < chiperText.Length; i += aes.BlockSize)
 				resultSize += transform.TransformBlock(chiperText, i, Math.Min(aes.BlockSize, chiperText.Length - i), result, i);
 			Console.WriteLine(result.ToASCII());
+		}
+		public static void Challenge08()
+		{
+			var lines = System.IO.File.ReadAllLines("Challenge8.hex.lines", Encoding.ASCII).Select(Bytes.FromHex).ToArray();
+			int id = 0;
+			foreach (var line in lines)
+			{
+				++id;
+				var blocks = line.Split(16);
+				if (blocks.ToHashSet(ArrayEqualComparer<byte>.Instance).Count != blocks.Length)
+					Console.WriteLine($"The line {id} is most likely AES-ECB encrypted.");
+			}
 		}
 	}
 }

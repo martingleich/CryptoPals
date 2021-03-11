@@ -37,24 +37,10 @@ namespace CryptoPals
 			}
 		}
 
-		public static IEnumerable<byte[]> Transpose(IEnumerable<byte> values, int step)
-		{
-			List<byte>[] lists = new List<byte>[step];
-			for (int i = 0; i < step; ++i)
-				lists[i] = new List<byte>();
-			int j = 0;
-			foreach (var b in values)
-			{
-				lists[j].Add(b);
-				j = (j + 1) % step;
-			}
-			return lists.Select(l => l.ToArray()).ToArray();
-		}
-
 		public static byte[] FindKey(byte[] chiperText, int keySize)
 		{
 			List<byte> key = new List<byte>();
-			foreach (var b in Transpose(chiperText, keySize))
+			foreach (var b in chiperText.Transpose(keySize))
 			{
 				var keyByte = SingleByteXorChiper.FindDecryptionKeys(b, 1, 0.05).First().Item1;
 				key.Add(keyByte);

@@ -38,5 +38,31 @@ namespace CryptoPals
 				throw new ArgumentException("Diffrent length of parameters");
 			return Create(a.Zip(b, (a, b) => (byte)(a ^ b)));
 		}
+
+		public static byte[][] Transpose(this byte[] self, int step)
+		{
+			List<byte>[] lists = new List<byte>[step];
+			for (int i = 0; i < step; ++i)
+				lists[i] = new List<byte>();
+			int j = 0;
+			foreach (var b in self)
+			{
+				lists[j].Add(b);
+				j = (j + 1) % step;
+			}
+			return lists.Select(l => l.ToArray()).ToArray();
+		}
+
+		public static byte[][] Split(this byte[] self, int step)
+		{
+			List<byte[]> blocks = new List<byte[]>();
+			for (int i = 0; i < self.Length; i += step)
+			{
+				var block = new byte[step];
+				Array.Copy(self, i, block, 0, step);
+				blocks.Add(block);
+			}
+			return blocks.ToArray();
+		}
 	}
 }
