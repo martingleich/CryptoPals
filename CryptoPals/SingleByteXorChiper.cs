@@ -5,16 +5,16 @@ namespace CryptoPals
 {
 	public static class SingleByteXorChiper
 	{
-		public static Bytes Decrypt(Bytes chiperText, byte key) => new Bytes(chiperText.Select(c => c.Xor(key)));
+		public static byte[] Decrypt(byte[] chiperText, byte key) => Bytes.Create(chiperText.Select(c => c.Xor(key)));
 
-		public static IEnumerable<(Bytes, byte, double)> FindDecryptionKeys(Bytes chiperText, int topCount, double cutoff)
+		public static IEnumerable<(byte, double)> FindDecryptionKeys(byte[] chiperText, int topCount, double cutoff)
 		{
 			var freqMap = ByteFreqMap.FromValues(chiperText);
 			return (from key in Extensions.AllBytes()
 					let error = DecryptionError(key, freqMap, cutoff)
 					where error <= cutoff
 					orderby error
-					select (Decrypt(chiperText, key), key, error)).Take(topCount);
+					select (key, error)).Take(topCount);
 		}
 
 		private static double DecryptionError(byte k, ByteFreqMap freqMap, double cutoff)

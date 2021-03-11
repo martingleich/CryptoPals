@@ -7,13 +7,13 @@ namespace CryptoPals
 {
 	public static class RepeatingKeyXorChiper
 	{
-		public static Bytes Encrypt(Bytes clearText, Bytes key) => new Bytes(clearText.Select((c, id) => c.Xor(key[id % key.Count])));
-		public static Bytes Decrypt(Bytes chiperText, Bytes key) => Encrypt(chiperText, key);
+		public static byte[] Encrypt(byte[] clearText, byte[] key) => Bytes.Create(clearText.Select((c, id) => c.Xor(key[id % key.Length])));
+		public static byte[] Decrypt(byte[] chiperText, byte[] key) => Encrypt(chiperText, key);
 
-		public static int HammingDistance(Bytes a, Bytes b) => a.Zip(b, HammingDistance).Sum();
+		public static int HammingDistance(byte[] a, byte[] b) => a.Zip(b, HammingDistance).Sum();
 		public static int HammingDistance(byte a, byte b) => BitOperations.PopCount((uint)(a ^ b));
 
-		public static IEnumerable<(int, double)> FindKeySizes(Bytes chiperText)
+		public static IEnumerable<(int, double)> FindKeySizes(byte[] chiperText)
 		{
 			var rnd = new Random();
 			for (int keySize = 2; keySize < 40; ++keySize)
@@ -22,11 +22,11 @@ namespace CryptoPals
 				double distance = 0;
 				for (int i = 0; i < count; ++i)
 				{
-					var first = rnd.Next(0, chiperText.Count / keySize) * keySize;
+					var first = rnd.Next(0, chiperText.Length / keySize) * keySize;
 					int second;
 					do
 					{
-						second = rnd.Next(0, chiperText.Count / keySize) * keySize;
+						second = rnd.Next(0, chiperText.Length / keySize) * keySize;
 					} while (first == second);
 
 					for (int j = 0; j < keySize; ++j)
@@ -37,7 +37,7 @@ namespace CryptoPals
 			}
 		}
 
-		public static IEnumerable<Bytes> Transpose(IEnumerable<byte> values, int step)
+		public static IEnumerable<byte[]> Transpose(IEnumerable<byte> values, int step)
 		{
 			List<byte>[] lists = new List<byte>[step];
 			for (int i = 0; i < step; ++i)
@@ -48,21 +48,21 @@ namespace CryptoPals
 				lists[j].Add(b);
 				j = (j + 1) % step;
 			}
-			return lists.Select(l => new Bytes(l)).ToArray();
+			return lists.Select(l => l.ToArray()).ToArray();
 		}
 
-		public static Bytes FindKey(Bytes chiperText, int keySize)
+		public static byte[] FindKey(byte[] chiperText, int keySize)
 		{
 			List<byte> key = new List<byte>();
 			foreach (var b in Transpose(chiperText, keySize))
 			{
-				IEnumerable<(Bytes, byte, double)> blub = SingleByteXorChiper.FindDecryptionKeys(b, 5, 1);
-				key.Add(blub.First().Item2);
+				var keyByte = SingleByteXorChiper.FindDecryptionKeys(b, 1, 0.05).First().Item1;
+				key.Add(keyByte);
 			}
-			return new Bytes(key);
+			return Bytes.Create(key);
 		}
 
-		public static IEnumerable<Bytes> FindDecryption(Bytes chiperText)
+		public static IEnumerable<byte[]> FindDecryption(byte[] chiperText)
 		{
 			var keySizes = FindKeySizes(chiperText).OrderBy(k => k.Item2);
 			foreach (var (keySize, prop) in keySizes)

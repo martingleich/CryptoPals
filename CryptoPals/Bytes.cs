@@ -1,47 +1,23 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
 namespace CryptoPals
 {
-	public struct Bytes : IEquatable<Bytes>, IReadOnlyCollection<byte>
+	public static class Bytes
 	{
-		private readonly byte[] Raw;
+		public static byte[] Create(IEnumerable<byte> bytes) => bytes.ToArray();
+		public static byte[] FromHex(string input) => StringConversion.HexToBytes(input);
+		public static byte[] FromASCII(string input) => Encoding.ASCII.GetBytes(input);
+		public static byte[] FromBase64(string input) => StringConversion.Base64ToBytes(input);
 
-		public int Count => ((IReadOnlyCollection<byte>)Raw).Count;
-
-		public Bytes(params byte[] raw)
+		public static string ToHex(this byte[] self) => StringConversion.ToHex(self);
+		public static string ToBase64(this byte[] self) => StringConversion.ToBase64(self);
+		public static string ToASCII(this byte[] self) => Encoding.ASCII.GetString(self);
+		public static string ToPrintableASCII(this byte[] self)
 		{
-			Raw = raw;
-		}
-		public Bytes(IEnumerable<byte> raw) : this(raw.ToArray())
-		{
-		}
-
-		public static Bytes FromHex(string input) => new Bytes(StringConversion.HexToBytes(input));
-		public static Bytes FromASCII(string input) => new Bytes(Encoding.ASCII.GetBytes(input));
-		public static Bytes FromBase64(string input) => new Bytes(StringConversion.Base64ToBytes(input));
-		internal string ToHex() => StringConversion.ToHex(Raw);
-
-		public override bool Equals(object? obj) => obj is Bytes bytes && Equals(bytes);
-		public bool Equals([AllowNull] Bytes other)
-		{
-			if (Raw.Length != other.Raw.Length)
-				return false;
-			for (int i = 0; i < Raw.Length; ++i)
-				if (Raw[i] != other.Raw[i])
-					return false;
-			return true;
-		}
-
-		public string ToBase64() => StringConversion.ToBase64(Raw);
-		public string ToASCII() => Encoding.ASCII.GetString(Raw);
-		public string ToPrintableASCII()
-		{
-			var ascii = ToASCII();
+			var ascii = self.ToASCII();
 			var sb = new StringBuilder();
 			foreach (var c in ascii)
 			{
@@ -55,19 +31,11 @@ namespace CryptoPals
 			return sb.ToString();
 		}
 
-		public override string ToString() => ToBase64();
-		public override int GetHashCode() => Raw.Aggregate(0, (a,b) => HashCode.Combine(a, b));
-
-		public byte this[int idx] => Raw[idx];
-
-		public IEnumerator<byte> GetEnumerator()
+		public static byte[] Xor(byte[] a, byte[] b)
 		{
-			return ((IEnumerable<byte>)Raw).GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return Raw.GetEnumerator();
+			if (a.Length != b.Length)
+				throw new ArgumentException("Diffrent length of parameters");
+			return Create(a.Zip(b, (a, b) => (byte)(a ^ b)));
 		}
 	}
 }

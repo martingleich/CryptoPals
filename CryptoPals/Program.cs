@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace CryptoPals
@@ -20,14 +21,14 @@ namespace CryptoPals
 		{
 			var first = Bytes.FromHex("1c0111001f010100061a024b53535009181c");
 			var second = Bytes.FromHex("686974207468652062756c6c277320657965");
-			Console.WriteLine(Operations.Xor(first, second).ToHex());
+			Console.WriteLine(Bytes.Xor(first, second).ToHex());
 		}
 		public static void Third()
 		{
 			var chiper = Bytes.FromHex("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736");
 			foreach (var opt in SingleByteXorChiper.FindDecryptionKeys(chiper, 10, 0.05))
 			{
-				var text = opt.Item1.ToPrintableASCII();
+				var text = SingleByteXorChiper.Decrypt(chiper, opt.Item1).ToPrintableASCII();
 				Console.WriteLine(text);
 			}
 		}
@@ -37,12 +38,12 @@ namespace CryptoPals
 			var guesses = from entry in lines.AddIDs()
 						  let chiper = Bytes.FromHex(entry.Value)
 						  from guess in SingleByteXorChiper.FindDecryptionKeys(chiper, 3, 0.05)
-						  orderby guess.Item3
-						  select (guess.Item1, entry.Id, guess.Item3);
-			foreach (var (lineBytes, id, err) in guesses.Take(10))
+						  orderby guess.Item2
+						  select (SingleByteXorChiper.Decrypt(chiper, guess.Item1).ToPrintableASCII(), entry.Id);
+			foreach (var (clearText, id) in guesses.Take(10))
 			{
-				Console.Write($"{id:D3}/{err}: ");
-				Console.WriteLine(lineBytes.ToPrintableASCII());
+				Console.Write($"{id:D3}: ");
+				Console.WriteLine(clearText);
 			}
 		}
 		public static void Fifth()
@@ -59,6 +60,13 @@ namespace CryptoPals
 			{
 				Console.WriteLine(option.ToASCII());
 			}
+		}
+
+		public static void Seventh()
+		{
+			var aes = Aes.Create();
+			aes.BlockSize = 128;
+			aes.Mode = CipherMode.ECB;
 		}
 	}
 }
