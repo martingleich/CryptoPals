@@ -15,5 +15,12 @@ namespace CryptoPals
 
 			return (first, second);
 		}
+		public static byte[] NextNBytes(this Random self, int count)
+		{
+			var result = new byte[count];
+			self.NextBytes(result);
+			return result;
+		}
+		public static bool NextBool(this Random self) => self.Next(0, 2) == 0;
 	}
 }

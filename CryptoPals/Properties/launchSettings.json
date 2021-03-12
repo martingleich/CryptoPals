@@ -2,6 +2,7 @@
   "profiles": {
     "CryptoPals": {
       "commandName": "Project",
+      "commandLineArgs": "11",
       "workingDirectory": "C:\\Home\\source\\CryptoPals"
     }
   }

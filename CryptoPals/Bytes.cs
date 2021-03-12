@@ -48,6 +48,8 @@ namespace CryptoPals
 			return FromRange(a.Zip(b, (a, b) => (byte)(a ^ b)));
 		}
 
+		public static byte[] Concat(this IEnumerable<byte[]> blocks) => blocks.SelectMany(b => b).ToArray();
+
 		public static byte[][] Transpose(this byte[] self, int step)
 		{
 			List<byte>[] lists = new List<byte>[step];

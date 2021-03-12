@@ -15,5 +15,6 @@ namespace CryptoPals
 		public static byte Xor(this byte a, byte b) => (byte)(a ^ b);
 		public static int HammingDistance(this byte a, byte b) => BitOperations.PopCount((uint)(a ^ b));
 		public static IEnumerable<(T Value, int Id)> AddIDs<T>(this IEnumerable<T> self, int offset = 0, int scale = 1) => self.Select((x, i) => (x, offset + scale*i));
+		public static bool HasDuplicates<T>(this IEnumerable<T> self, IEqualityComparer<T> comparer) => self.GroupBy(b => b, comparer).Any(g => g.Count() > 1);
 	}
 }
