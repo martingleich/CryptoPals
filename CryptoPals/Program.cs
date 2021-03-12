@@ -1,15 +1,73 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace CryptoPals
 {
+	public static class MyAes
+	{
+		public static Func<byte[], byte[]> MakeEncrypt(byte[] key)
+		{
+			var aes = Aes.Create();
+			aes.Mode = CipherMode.ECB;
+			aes.Key = key;
+			aes.Padding = PaddingMode.None;
+			var transform = aes.CreateEncryptor();
+			return clear => transform.TransformFinalBlock(clear, 0, clear.Length);
+		}
+		public static Func<byte[], byte[]> MakeDecrypt(byte[] key)
+		{
+			var aes = Aes.Create();
+			aes.Mode = CipherMode.ECB;
+			aes.Key = key;
+			aes.Padding = PaddingMode.None;
+			var transform = aes.CreateDecryptor();
+			return clear => transform.TransformFinalBlock(clear, 0, clear.Length);
+		}
+
+		public static Func<byte[], byte[]> MakeEncryptCBC(byte[] key, byte[] iv)
+		{
+			var encrypt = MakeEncrypt(key);
+
+			return clearText =>
+			{
+				var padded = clearText.Pad_PKCS_7_Multiple(16);
+				var lastChiper = iv;
+				List<byte[]> blocks = new List<byte[]>();
+				foreach (var block in padded.Split(16))
+				{
+					lastChiper = encrypt(block.Xor(lastChiper));
+					blocks.Add(lastChiper);
+				}
+				return Bytes.FromRange(blocks.SelectMany(b => b));
+			};
+		}
+		public static Func<byte[], byte[]> MakeDecryptCBC(byte[] key, byte[] iv)
+		{
+			var decrypt = MakeDecrypt(key);
+
+			return chiperText =>
+			{
+				var lastChiper = iv;
+				List<byte[]> blocks = new List<byte[]>();
+				foreach (var block in chiperText.Split(16))
+				{
+					var clear = decrypt(block).Xor(lastChiper);
+					lastChiper = block;
+					blocks.Add(clear);
+				}
+				return Bytes.FromRange(blocks.SelectMany(b => b));
+			};
+		}
+	}
+
 	public static class Program
 	{
 		static void Main(string[] args)
 		{
-			Challenge09();
+			Challenge10();
 		}
 
 		public static void Challenge01()
@@ -60,19 +118,13 @@ namespace CryptoPals
 				Console.WriteLine(option.ToASCII());
 			}
 		}
+
 		public static void Challenge07()
 		{
-			var aes = Aes.Create();
-			aes.Mode = CipherMode.ECB;
-			aes.Key = Bytes.FromASCII("YELLOW SUBMARINE");
-			var transform = aes.CreateDecryptor();
-
 			var chiperText = Bytes.FromBase64(System.IO.File.ReadAllLines("Challenge7.base64", Encoding.ASCII));
-			byte[] result = new byte[chiperText.Length];
-			int resultSize = 0;
-			for (int i = 0; i < chiperText.Length; i += aes.BlockSize)
-				resultSize += transform.TransformBlock(chiperText, i, Math.Min(aes.BlockSize, chiperText.Length - i), result, i);
-			Console.WriteLine(result.ToASCII());
+			var decrypt = MyAes.MakeDecrypt(Bytes.FromASCII("YELLOW SUBMARINE"));
+			for (int i = 0; i < chiperText.Length; i += 16)
+				Console.Write(decrypt(chiperText.Subrange(i, 16)).ToASCII());
 		}
 		public static void Challenge08()
 		{
@@ -90,6 +142,12 @@ namespace CryptoPals
 		{
 			var value = Bytes.FromASCII("YELLOW SUBMARINE").Pad_PKCS_7(20);
 			Console.Write(value.ToPrintableASCII());
+		}
+		public static void Challenge10()
+		{
+			var chiperText = Bytes.FromBase64(System.IO.File.ReadAllLines("Challenge10.base64"));
+			var decrypt = MyAes.MakeDecryptCBC(Bytes.FromASCII("YELLOW SUBMARINE"), new byte[16]);
+			Console.WriteLine(decrypt(chiperText).ToASCII());
 		}
 	}
 }

@@ -32,9 +32,16 @@ namespace CryptoPals
 			return sb.ToString();
 		}
 
+		public static byte[] Subrange(this byte[] self, int start, int length)
+		{
+			var arr = new byte[length];
+			Array.Copy(self, start, arr, 0, length);
+			return arr;
+		}
+
 		public static int HammingDistance(this byte[] a, byte[] b) => a.Zip(b, Extensions.HammingDistance).Sum();
 
-		public static byte[] Xor(byte[] a, byte[] b)
+		public static byte[] Xor(this byte[] a, byte[] b)
 		{
 			if (a.Length != b.Length)
 				throw new ArgumentException("Diffrent length of parameters");
@@ -67,6 +74,8 @@ namespace CryptoPals
 			return blocks.ToArray();
 		}
 
+		public static byte[] Pad_PKCS_7_Multiple(this byte[] data, int blockSize)
+			=> data.Pad_PKCS_7(((data.Length + blockSize - 1) / blockSize) * blockSize);
 		public static byte[] Pad_PKCS_7(this byte[] data, int paddingLength)
 		{
 			if (data.Length > paddingLength)
