@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace CryptoPals
@@ -96,7 +98,7 @@ namespace CryptoPals
 			{
 				var prefix = rnd.NextNBytes(rnd.Next(5, 10));
 				var postfix = rnd.NextNBytes(rnd.Next(5, 10));
-				var total =  prefix.Concat(input).Concat(postfix).ToArray().Pad_PKCS_7_Multiple(16);
+				var total = prefix.Concat(input).Concat(postfix).ToArray().Pad_PKCS_7_Multiple(16);
 				var key = rnd.NextNBytes(16);
 				var iv = rnd.NextNBytes(16);
 				var usedMode = rnd.NextBool();
@@ -117,5 +119,51 @@ namespace CryptoPals
 				Console.WriteLine("======");
 			}
 		}
+		public static void Challenge12()
+		{
+			byte[] unknownString = Bytes.FromBase64("Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK");
+
+			Func<byte[], byte[]> baseEncrypt = MyAes.MakeEncryptEBC(new Random().NextNBytes(16));
+			byte[] encrypt(byte[] clear) => baseEncrypt(Bytes.Concat(clear, unknownString));
+
+			var blockSize = MyTools.DetectBlockSize(encrypt);
+			bool isEBC = MyTools.IsEBC(encrypt, blockSize);
+			if (!isEBC)
+				throw new InvalidOperationException();
+			var secret = new List<byte>();
+			var block = new byte[blockSize];
+			int curBlockStart = 0;
+			int curBlockLast = curBlockStart + blockSize - 1;
+			while (true)
+			{
+				Array.Copy(block, 1, block, 0, block.Length - 1);
+				var value = encrypt(new byte[blockSize - 1 - secret.Count % blockSize]).Subrange(curBlockStart, blockSize);
+				bool found = false;
+				foreach (byte b in Extensions.AllBytes())
+				{
+					block[^1] = b;
+					var chiper = encrypt(block).Subrange(curBlockStart, blockSize);
+					if (ArrayEqualComparer<byte>.Instance.Equals(chiper, value))
+					{
+						secret.Add(b);
+						if (secret.Count % blockSize == 0)
+						{
+							var newBlock = new byte[curBlockLast + 1 + blockSize];
+							Array.Copy(block, curBlockStart, newBlock, curBlockStart + blockSize, blockSize);
+							block = newBlock;
+
+							curBlockStart += blockSize;
+							curBlockLast += blockSize;
+						}
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					break; // Can we find a better way to stop. This seems kind of strange.
+			}
+			Console.WriteLine(secret.ToArray().ToASCII());
+		}
+
 	}
 }

@@ -32,12 +32,14 @@ namespace CryptoPals
 			return sb.ToString();
 		}
 
+		public static byte[] Repeat(byte b, int count) => Enumerable.Repeat(b, count).ToArray();
 		public static byte[] Subrange(this byte[] self, int start, int length)
 		{
 			var arr = new byte[length];
 			Array.Copy(self, start, arr, 0, length);
 			return arr;
 		}
+		public static byte[] BlockN(this byte[] self, int block, int length) => self.Subrange(block * length, length);
 
 		public static int HammingDistance(this byte[] a, byte[] b) => a.Zip(b, Extensions.HammingDistance).Sum();
 
@@ -48,6 +50,7 @@ namespace CryptoPals
 			return FromRange(a.Zip(b, (a, b) => (byte)(a ^ b)));
 		}
 
+		public static byte[] Concat(params byte[][] blocks) => blocks.Concat();
 		public static byte[] Concat(this IEnumerable<byte[]> blocks) => blocks.SelectMany(b => b).ToArray();
 
 		public static byte[][] Transpose(this byte[] self, int step)

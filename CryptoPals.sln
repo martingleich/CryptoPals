@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPals", "CryptoPals\CryptoPals.csproj", "{9CB24379-660F-4F74-9305-4DF1B42983EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoPals", "CryptoPals\CryptoPals.csproj", "{9CB24379-660F-4F74-9305-4DF1B42983EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B342C650-1CAF-4CC7-8289-0501447350E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{B342C650-1CAF-4CC7-8289-0501447350E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44CBDD75-8531-4D0F-8C47-3F5C28B344EF}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
