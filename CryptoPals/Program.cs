@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 
 namespace CryptoPals
 {
@@ -122,7 +122,6 @@ namespace CryptoPals
 		public static void Challenge12()
 		{
 			byte[] unknownString = Bytes.FromBase64("Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK");
-
 			Func<byte[], byte[]> baseEncrypt = MyAes.MakeEncryptEBC(new Random().NextNBytes(16));
 			byte[] encrypt(byte[] clear) => baseEncrypt(Bytes.Concat(clear, unknownString));
 
@@ -136,7 +135,7 @@ namespace CryptoPals
 			int curBlockLast = curBlockStart + blockSize - 1;
 			while (true)
 			{
-				Array.Copy(block, 1, block, 0, block.Length - 1);
+				Array.Copy(block, 1, block, 0, block.Length - 1); // Shift block one to the left
 				var value = encrypt(new byte[blockSize - 1 - secret.Count % blockSize]).Subrange(curBlockStart, blockSize);
 				bool found = false;
 				foreach (byte b in Extensions.AllBytes())
@@ -164,6 +163,46 @@ namespace CryptoPals
 			}
 			Console.WriteLine(secret.ToArray().ToASCII());
 		}
+		public static void Challenge13()
+		{
+			static string ProfileFor(string email) => new Profile(email, "10", "user").ToString();
+			var key = new Random().NextNBytes(16);
+			Func<byte[], byte[]> encrypt = MyAes.MakeEncryptEBC(key);
+			Func<byte[], byte[]> decrypt = MyAes.MakeDecryptEBC(key);
+			byte[] ProfileForChiper(string email) => encrypt(Encoding.ASCII.GetBytes(ProfileFor(email)));
+			void ShowProfile(byte[] encrypted) => Console.WriteLine(Profile.FromString(Encoding.ASCII.GetString(decrypt(encrypted))));
 
+			var blockSize = 16;
+			var prefix = "email=";
+			var role = "admin";
+			var restAdminBlock = blockSize - role.Length;
+			var x = ProfileForChiper(new string('x', blockSize - prefix.Length) + role + new string((char)restAdminBlock, restAdminBlock));
+			var adminBlock = x.BlockN(1, blockSize);
+			var y = ProfileForChiper("foobar@web.de");
+			Array.Copy(adminBlock, 0, y, 2 * blockSize, blockSize);
+			ShowProfile(y);
+		}
+	}
+
+	public sealed class Profile
+	{
+		public readonly string Email;
+		public readonly string Uid;
+		public readonly string Role;
+
+		public Profile(string email, string uid, string role)
+		{
+			Email = email.Replace("&", "").Replace("=", "");
+			Uid = Uri.EscapeDataString(uid);
+			Role = Uri.EscapeDataString(role);
+		}
+
+		public static Profile FromString(string str)
+		{
+			var queryString = HttpUtility.ParseQueryString(str);
+			return new Profile(queryString["email"], queryString["uid"], queryString["role"]);
+		}
+
+		public override string ToString() => $"email={Email}&uid={Uid}&Role={Role}";
 	}
 }

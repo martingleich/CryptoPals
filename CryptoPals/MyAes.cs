@@ -41,6 +41,21 @@ namespace CryptoPals
 				return blocks.Concat();
 			};
 		}
+		public static Func<byte[], byte[]> MakeDecryptEBC(byte[] key)
+		{
+			var decrypt = MakeDecryptBlock(key);
+
+			return chiperText =>
+			{
+				List<byte[]> blocks = new List<byte[]>();
+				foreach (var block in chiperText.Split(16))
+				{
+					var clear = decrypt(block);
+					blocks.Add(clear);
+				}
+				return blocks.Concat();
+			};
+		}
 		public static Func<byte[], byte[]> MakeEncryptCBC(byte[] key, byte[] iv)
 		{
 			var encrypt = MakeEncryptBlock(key);
