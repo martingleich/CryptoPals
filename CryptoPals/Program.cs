@@ -138,7 +138,7 @@ namespace CryptoPals
 				Array.Copy(block, 1, block, 0, block.Length - 1); // Shift block one to the left
 				var value = encrypt(new byte[blockSize - 1 - secret.Count % blockSize]).Subrange(curBlockStart, blockSize);
 				bool found = false;
-				foreach (byte b in Extensions.AllBytes())
+				foreach (byte b in Facts.ENGLISH_FREQ_MAP.BytesByDecreasingFrequencies)
 				{
 					block[^1] = b;
 					var chiper = encrypt(block).Subrange(curBlockStart, blockSize);

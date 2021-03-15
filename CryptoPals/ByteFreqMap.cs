@@ -8,10 +8,12 @@ namespace CryptoPals
 	public struct ByteFreqMap : IEnumerable<KeyValuePair<byte, double>>
 	{
 		private readonly ImmutableArray<double> Frequencies;
+		public readonly ImmutableArray<byte> BytesByDecreasingFrequencies;
 
 		private ByteFreqMap(ImmutableArray<double> frequencies)
 		{
 			Frequencies = frequencies;
+			BytesByDecreasingFrequencies = Frequencies.AddIDs().OrderByDescending(v => v.Value).Select(v => (byte)v.Id).ToImmutableArray();
 		}
 
 		public static ByteFreqMap FromValues(IEnumerable<byte> bytes)
